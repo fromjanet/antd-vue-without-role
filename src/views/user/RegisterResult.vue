@@ -1,3 +1,11 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-04-26 15:44:19
+ * @LastEditTime: 2020-04-26 17:28:12
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \my-project\src\views\user\RegisterResult.vue
+ -->
 <template>
   <result
     :isSuccess="true"
@@ -39,7 +47,7 @@ export default {
   },
   methods: {
     goHomeHandle () {
-      this.$router.push({ name: 'login' })
+      this.$router.push({ path: '/' })
     }
   }
 }

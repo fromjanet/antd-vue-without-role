@@ -13,10 +13,13 @@
   },
   "dependencies": {
     "@antv/data-set": "^0.10.2",
+    "@antv/l7": "^2.2.1",
+    "@antv/l7-maps": "^2.2.1",
     "ant-design-vue": "1.5.0-rc.6",
     "axios": "^0.19.0",
     "core-js": "^3.1.2",
     "enquire.js": "^2.1.6",
+    "load-styles": "^2.0.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.get": "^4.4.2",
     "lodash.pick": "^4.4.0",
