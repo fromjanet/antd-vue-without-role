@@ -50,6 +50,13 @@ export const asyncRouterMap = [
         component: () => import('@/views/projectManage/CardList'),
         meta: { title: '方案管理', icon: 'form', permission: [ 'ProjectManage' ] }
       },
+      {
+        path: '/projectManage/projectDetail',
+        name: 'projectDetail',
+        component: () => import('@/views/projectManage/projectDetail'),
+        hidden: true,
+        meta: { title: '方案细节', keepAlive: true }
+      },
       // dashboard
       {
         path: 'dashboard',

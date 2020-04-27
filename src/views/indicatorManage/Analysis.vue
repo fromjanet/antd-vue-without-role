@@ -8,9 +8,9 @@
               <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
                 <ChinaMap />
               </a-col>
-              <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
+              <!-- <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
                 <rank-list title="门店销售排行榜" :list="rankList"/>
-              </a-col>
+              </a-col> -->
             </a-row>
           </a-tab-pane>
           <a-tab-pane tab="表格" key="2">
@@ -177,6 +177,9 @@ export default {
     setTimeout(() => {
       this.loading = !this.loading
     }, 1000)
+  },
+  methods: {
+
   }
 }
 </script>

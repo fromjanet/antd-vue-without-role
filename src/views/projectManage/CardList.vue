@@ -104,7 +104,7 @@ export default {
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
 
-      margin-bottom: 1em;
+      // margin-bottom: 1em;
     }
   }
 

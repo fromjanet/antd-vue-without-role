@@ -1,51 +1,39 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-04-26 17:53:50
+ * @LastEditTime: 2020-04-27 22:50:43
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \my-project\src\views\indicatorManage\TreeList.vue
+ -->
 <template>
   <a-card :bordered="false">
     <a-row :gutter="8">
       <a-col :span="5">
-        <s-tree
-          :dataSource="orgTree"
-          :openKeys.sync="openKeys"
-          :search="true"
-          @click="handleClick"
-          @add="handleAdd"
-          @titleClick="handleTitleClick"></s-tree>
+        <div class="contain" v-if="this.indicators">
+          <div class="allIndicators" v-for="(item,index) in indicators" :key="index">
+            <div @click="item.rotate=!item.rotate" class="firstIndicators" :class="[item.rotate ? 'rotate':'']" >
+              <p>{{ item.id }}{{ item.name }}</p>
+            </div>
+            <div v-if="item.children&&item.rotate">
+              <div v-for="(itemChild, i) in item.children" :key="i">
+                <div :style="[{backgroundColor: itemChild.hasClick ? '#1890FF' : ''}]" @click="clickItem(itemChild.id)" class="itemChild"><p>{{ itemChild.id }}{{ itemChild.name }}</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </a-col>
       <a-col :span="19">
-        <s-table
-          ref="table"
-          size="default"
-          :columns="columns"
-          :data="loadData"
-          :alert="false"
-          :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
-        >
-          <span slot="action" slot-scope="text, record">
-            <template v-if="$auth('table.update')">
-              <a @click="handleEdit(record)">编辑</a>
-              <a-divider type="vertical" />
-            </template>
-            <a-dropdown>
-              <a class="ant-dropdown-link">
-                更多 <a-icon type="down" />
-              </a>
-              <a-menu slot="overlay">
-                <a-menu-item>
-                  <a href="javascript:;">详情</a>
-                </a-menu-item>
-                <a-menu-item v-if="$auth('table.disable')">
-                  <a href="javascript:;">禁用</a>
-                </a-menu-item>
-                <a-menu-item v-if="$auth('table.delete')">
-                  <a href="javascript:;">删除</a>
-                </a-menu-item>
-              </a-menu>
-            </a-dropdown>
-          </span>
-        </s-table>
+        <div v-if="thirdIndicators">
+          <div class="thirdIndicators" v-for="(item, index) in thirdIndicators" :key="index">
+            <div>{{ item.id }}</div>
+            <div>{{ item.name }}</div>
+          </div>
+        </div>
       </a-col>
     </a-row>
 
-    <org-modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose" />
+    <!-- <org-modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose" /> -->
   </a-card>
 </template>
 
@@ -53,7 +41,8 @@
 import STree from '@/components/Tree/Tree'
 import { STable } from '@/components'
 import OrgModal from './modules/OrgModal'
-import { getOrgTree, getServiceList } from '@/api/manage'
+// import { getOrgTree, getServiceList } from '@/api/manage'
+import { getAllIndicators, getThirdIndicators } from '@/api/indicators'
 
 export default {
   name: 'TreeList',
@@ -64,129 +53,101 @@ export default {
   },
   data () {
     return {
-      openKeys: ['key-01'],
-
-      // 查询参数
-      queryParam: {},
-      // 表头
-      columns: [
-        {
-          title: '#',
-          dataIndex: 'no'
-        },
-        {
-          title: '成员名称',
-          dataIndex: 'description'
-        },
-        {
-          title: '登录次数',
-          dataIndex: 'callNo',
-          sorter: true,
-          needTotal: true,
-          customRender: (text) => text + ' 次'
-        },
-        {
-          title: '状态',
-          dataIndex: 'status',
-          needTotal: true
-        },
-        {
-          title: '更新时间',
-          dataIndex: 'updatedAt',
-          sorter: true
-        },
-        {
-          title: '操作',
-          dataIndex: 'action',
-          width: '150px',
-          scopedSlots: { customRender: 'action' }
-        }
-      ],
-      // 加载数据方法 必须为 Promise 对象
-      loadData: parameter => {
-        return getServiceList(Object.assign(parameter, this.queryParam))
-          .then(res => {
-            return res.result
-          })
-      },
-      orgTree: [],
-      selectedRowKeys: [],
-      selectedRows: []
+      indicators: [],
+      rotate: false,
+      thirdIndicators: []
     }
   },
   created () {
-    getOrgTree().then(res => {
-      this.orgTree = res.result
-    })
+    this.getAllIndicators()
+  },
+  watch: {
+    rotate: (oldV, newV) => {
+      console.log(oldV, newV)
+    }
   },
   methods: {
-    handleClick (e) {
-      console.log('handleClick', e)
-      this.queryParam = {
-        key: e.key
+    async clickItem (id) {
+      this.indicators.forEach((item, index) => {
+          item.children.forEach((child, i) => {
+            child.hasClick = false
+            if (child.id === id) {
+            child.hasClick = true
+            this.getThirdIndicators(child.id)
+          }
+          })
+        })
+    },
+    async getThirdIndicators (id) {
+      const res = await getThirdIndicators({ param: id })
+      console.log(res)
+      if (res.data.code === 200) {
+        this.thirdIndicators = res.data.detail
       }
-      this.$refs.table.refresh(true)
     },
-    handleAdd (item) {
-      console.log('add button, item', item)
-      this.$message.info(`提示：你点了 ${item.key} - ${item.title} `)
-      this.$refs.modal.add(item.key)
-    },
-    handleTitleClick (item) {
-      console.log('handleTitleClick', item)
-    },
-    titleClick (e) {
-      console.log('titleClick', e)
-    },
-    handleSaveOk () {
-
-    },
-    handleSaveClose () {
-
-    },
-
-    onSelectChange (selectedRowKeys, selectedRows) {
-      this.selectedRowKeys = selectedRowKeys
-      this.selectedRows = selectedRows
+    async getAllIndicators () {
+      const res = await getAllIndicators()
+      if (res.data.code === 200) {
+        const data = res.data.detail
+        data.forEach((item, index) => {
+          item.rotate = false
+          if (index === 0) {
+            item.rotate = true
+          }
+          item.children.forEach((child, i) => {
+            child.hasClick = false
+            if (i === 0 && index === 0) {
+            child.hasClick = true
+            this.getThirdIndicators(child.id)
+          }
+          })
+        })
+        this.indicators = data
+        console.log(this.indicators)
+      }
     }
   }
 }
 </script>
 
-<style lang="less">
-  .custom-tree {
-
-    /deep/ .ant-menu-item-group-title {
-      position: relative;
-      &:hover {
-        .btn {
-          display: block;
-        }
+<style lang="less" scoped>
+.contain {
+  .allIndicators{
+    // background-color: gray;
+    .firstIndicators{
+      background-color: #FAFAFA;
+      cursor: pointer;
+      height: 3rem;
+      border: 1px solid #DADADA;
+      padding-left: 0.5rem;
+      p{
+        margin-bottom: 0;
+        line-height: 3rem;
+        font-size: 1.2rem;
+        font-weight: 500;
       }
     }
-
-    /deep/ .ant-menu-item {
-      &:hover {
-        .btn {
-          display: block;
-        }
+    .itemChild{
+      cursor: pointer;
+      border: 1px solid #DADADA;
+      padding-left: 1rem;
+      vertical-align: middle;
+      p{
+        margin-bottom: 0;
+        line-height: 2.5rem;
       }
     }
-
-    /deep/ .btn {
-      display: none;
-      position: absolute;
-      top: 0;
-      right: 10px;
-      width: 20px;
-      height: 40px;
-      line-height: 40px;
-      z-index: 1050;
-
-      &:hover {
-        transform: scale(1.2);
-        transition: 0.5s all;
-      }
+    .hasClick {
+      background-color: #52C41A;
+    }
+  }
+}
+.thirdIndicators{
+    display: flex;
+    border: 1px solid #DADADA;
+    padding: 1.5rem 1.5rem;
+    div{
+      margin-right: 1rem;
     }
   }
 </style>
