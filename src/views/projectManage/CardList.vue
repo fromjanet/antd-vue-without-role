@@ -1,27 +1,43 @@
 <template>
-  <div class="card-list" ref="content">
+  <div
+    class="card-list"
+    ref="content"
+  >
     <a-list
       rowKey="id"
       :grid="{gutter: 24, lg: 3, md: 2, sm: 1, xs: 1}"
-      :dataSource="dataSource"
+      :dataSource="allMapCut"
     >
-      <a-list-item slot="renderItem" slot-scope="item">
-        <template v-if="!item || item.id === undefined">
-          <a-button class="new-btn" type="dashed">
-            <a-icon type="plus"/>
-            新增产品
+      <a-list-item
+        slot="renderItem"
+        slot-scope="item"
+      >
+        <template v-if="!item || item.cid === undefined">
+          <a-button
+            class="new-btn"
+            type="dashed"
+            @click="jumpToDetail()"
+          >
+            <a-icon type="plus" />
+            新增分析模型
           </a-button>
         </template>
         <template v-else>
           <a-card :hoverable="true">
             <a-card-meta>
-              <a slot="title">{{ item.title }}</a>
-              <a-avatar class="card-avatar" slot="avatar" :src="item.avatar" size="large"/>
-              <div class="meta-content" slot="description">{{ item.content }}</div>
+              <a slot="title">{{ item.cname }}</a>
+              <a-icon type="fund" />
+              <div
+                class="meta-content"
+                slot="description"
+              >{{ item.cdescribe }}</div>
             </a-card-meta>
-            <template class="ant-card-actions" slot="actions">
-              <a>操作一</a>
-              <a>操作二</a>
+            <template
+              class="ant-card-actions"
+              slot="actions"
+            >
+              <a @click="jumpToDetail()">修改</a>
+              <a @click="jumpToUse()">使用</a>
             </template>
           </a-card>
         </template>
@@ -31,17 +47,7 @@
 </template>
 
 <script>
-
-const dataSource = []
-dataSource.push({})
-for (let i = 0; i < 11; i++) {
-  dataSource.push({
-    id: i,
-    title: 'Alipay',
-    avatar: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
-    content: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
-  })
-}
+import { getAllMapCut } from '@/api/mapCut'
 
 export default {
   name: 'CardList',
@@ -64,10 +70,29 @@ export default {
         { icon: 'file-text', href: '#', title: '产品文档' }
       ],
       extraImage: 'https://gw.alipayobjects.com/zos/rmsportal/RzwpdLnhmvDJToTdfDPe.png',
-      dataSource
+      dataSource: [],
+      allMapCut: []
     }
   },
+  created () {
+    this.dataSource.push({})
+  this.getAllMapCut()
+  },
   methods: {
+    async getAllMapCut () {
+      const res = await getAllMapCut()
+      if (res.data.code === 200) {
+        this.allMapCut = res.data.detail
+        this.allMapCut.push({})
+        console.log(this.allMapCut)
+      }
+    },
+    jumpToDetail () {
+      this.$router.push('/projectDetail')
+    },
+    jumpToUse () {
+      this.$router.push('/projectUse')
+    },
     testFun () {
       this.$message.info('快速开始被点击！')
     }
@@ -76,75 +101,74 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  @import "~@/components/index.less";
+@import '~@/components/index.less';
 
-  .card-list {
-    /deep/ .ant-card-body:hover {
-      .ant-card-meta-title>a {
+.card-list {
+  /deep/ .ant-card-body:hover {
+    .ant-card-meta-title > a {
+      color: @primary-color;
+    }
+  }
+
+  /deep/ .ant-card-meta-title {
+    margin-bottom: 12px;
+
+    & > a {
+      display: inline-block;
+      max-width: 100%;
+      color: rgba(0, 0, 0, 0.85);
+    }
+  }
+
+  /deep/ .meta-content {
+    position: relative;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    height: 64px;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+
+    // margin-bottom: 1em;
+  }
+}
+
+.card-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 48px;
+}
+
+.ant-card-actions {
+  background: #f7f9fa;
+
+  li {
+    float: left;
+    text-align: center;
+    margin: 12px 0;
+    color: rgba(0, 0, 0, 0.45);
+    width: 50%;
+
+    &:not(:last-child) {
+      border-right: 1px solid #e8e8e8;
+    }
+
+    a {
+      color: rgba(0, 0, 0, 0.45);
+      line-height: 22px;
+      display: inline-block;
+      width: 100%;
+      &:hover {
         color: @primary-color;
       }
     }
-
-    /deep/ .ant-card-meta-title {
-      margin-bottom: 12px;
-
-      &>a {
-        display: inline-block;
-        max-width: 100%;
-        color: rgba(0,0,0,.85);
-      }
-    }
-
-    /deep/ .meta-content {
-      position: relative;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      height: 64px;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-
-      // margin-bottom: 1em;
-    }
   }
+}
 
-  .card-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 48px;
-  }
-
-  .ant-card-actions {
-    background: #f7f9fa;
-
-    li {
-      float: left;
-      text-align: center;
-      margin: 12px 0;
-      color: rgba(0, 0, 0, 0.45);
-      width: 50%;
-
-      &:not(:last-child) {
-        border-right: 1px solid #e8e8e8;
-      }
-
-      a {
-        color: rgba(0, 0, 0, .45);
-        line-height: 22px;
-        display: inline-block;
-        width: 100%;
-        &:hover {
-          color: @primary-color;
-        }
-      }
-    }
-  }
-
-  .new-btn {
-    background-color: #fff;
-    border-radius: 2px;
-    width: 100%;
-    height: 188px;
-  }
-
+.new-btn {
+  background-color: #fff;
+  border-radius: 2px;
+  width: 100%;
+  height: 188px;
+}
 </style>
