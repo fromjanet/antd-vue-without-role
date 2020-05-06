@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-04-26 17:53:50
- * @LastEditTime: 2020-05-01 22:22:48
+ * @LastEditTime: 2020-05-06 14:52:09
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \my-project\src\views\indicatorManage\TreeList.vue
@@ -69,12 +69,6 @@
                 </div>
               </div>
             </div>
-            <!-- <div
-              class="add"
-              @click="addIndex(1)"
-            >
-              <p>+</p>
-            </div> -->
           </div>
         </a-col>
         <a-col :span="19">
@@ -300,6 +294,7 @@ export default {
     },
     async getAllIndexMap () {
       const beclickindexid = sessionStorage.getItem('beClick')
+      let hasthird
       const res = await getAllIndexMap()
       if (res.data.code === 200) {
         const data = res.data.detail
@@ -310,10 +305,17 @@ export default {
             if (child.indexid === beclickindexid) {
             child.hasClick = true
             item.rotate = true
+            hasthird = true
             this.thirdIndicators = child.children
           }
           })
         })
+        if (!hasthird) {
+          data[0].children[0].hasClick = true
+          data[0].rotate = true
+          hasthird = false
+          this.thirdIndicators = data[0].children[0].children
+        }
         this.indicators = data
         // console.log(data)
       }

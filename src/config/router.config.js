@@ -9,29 +9,8 @@ export const asyncRouterMap = [
     name: 'index',
     component: BasicLayout,
     meta: { title: '首页' },
-    redirect: '/projectManage',
+    redirect: '/indicatorManage',
     children: [
-      // {
-      //   path: '/indexManage',
-      //   name: 'indexManage',
-      //   // component: PageView,
-      //   meta: { title: '指标及城市管理', icon: 'slack', permission: [ 'indexManage' ] },
-      //   redirect: '/indexManage/indicatorManage',
-      //   children: [
-      //     {
-      //     path: '/indexManage/indicatorManage',
-      //     name: 'indicatorManage',
-      //     component: () => import('@/views/indicatorManage/TreeList'),
-      //     meta: { title: '指标管理', keepAlive: true }
-      //   },
-      //   {
-      //     path: '/indexManage/cityManage',
-      //     name: 'cityManage',
-      //     component: () => import('@/views/indicatorManage/Analysis'),
-      //     meta: { title: '城市管理', keepAlive: true }
-      //   }
-      //   ]
-      // },
       {
         path: '/indicatorManage',
         name: 'IndicatorManage',
@@ -45,24 +24,34 @@ export const asyncRouterMap = [
         meta: { title: '城市管理', icon: 'table', permission: [ 'CityManage' ] }
       },
       {
-        path: '/projectManage',
-        name: 'ProjectManage',
-        component: () => import('@/views/projectManage/CardList'),
-        meta: { title: '模型管理', icon: 'form', permission: [ 'ProjectManage' ] }
-      },
-      {
-        path: '/projectDetail',
-        name: 'projectDetail',
-        component: () => import('@/views/projectManage/projectDetail'),
-        hidden: true,
-        meta: { title: '方案细节', keepAlive: true }
-      },
-      {
-        path: '/projectUse',
-        name: 'ProjectUse',
-        component: () => import('@/views/projectManage/projectUse'),
-        hidden: true,
-        meta: { title: '使用模型', keepAlive: true }
+        path: '/project',
+        name: 'Project',
+        redirect: '/project/projectManage',
+        component: RouteView,
+        hideChildrenInMenu: true,
+        meta: { title: '模型管理', keepAlive: true, icon: bxAnaalyse },
+        children: [
+          {
+            path: '/project/projectManage',
+            name: 'ProjectManage',
+            component: () => import('@/views/projectManage/CardList'),
+            meta: { title: '模型管理', icon: 'form' }
+          },
+          {
+            path: '/project/projectDetail',
+            name: 'ProjectDetail',
+            component: () => import('@/views/projectManage/projectDetail'),
+            hidden: true,
+            meta: { title: '方案细节', keepAlive: true }
+          },
+          {
+            path: '/project/projectUse',
+            name: 'ProjectUse',
+            component: () => import('@/views/projectManage/projectUse'),
+            hidden: true,
+            meta: { title: '使用模型', keepAlive: true }
+          }
+        ]
       },
       // dashboard
       {
