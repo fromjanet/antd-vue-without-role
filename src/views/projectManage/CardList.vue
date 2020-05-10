@@ -40,6 +40,17 @@
                 class="meta-content"
                 slot="description"
               >
+                <div v-if="item.attributes[0]">标签：<template v-for="(tag) in item.attributes">
+                  <a-tooltip v-if="tag.length > 5" :key="tag" :title="tag">
+                    <a-tag :key="tag" color="blue">
+                      {{ `${tag.slice(0, 5)}...` }}
+                    </a-tag>
+                  </a-tooltip>
+                  <a-tag v-else :key="tag" color="blue">
+                    {{ tag }}
+                  </a-tag>
+                </template></div>
+                <div v-else>标签：无</div>
                 <a-tooltip v-if="item.cdescribe.length > 43" :title="item.cdescribe" >
                   <div>{{ `${item.cdescribe.slice(0, 43)}...` }}</div>
                 </a-tooltip>
@@ -52,8 +63,8 @@
               class="ant-card-actions"
               slot="actions"
             >
-              <a @click="jumpToDetail(item)">编辑指标体系</a>
-              <a @click="jumpToUse()">使用</a>
+              <a @click="jumpToDetail(item.cid)">编辑指标体系</a>
+              <a @click="jumpToUse(item.cid)">使用</a>
             </template>
           </a-card>
         </template>
@@ -80,6 +91,19 @@
           allowClear
         />
       </div>
+      <div style="margin: 20px 0;">
+        <a-select
+          mode="multiple"
+          :default-value="modeltag"
+          style="width: 100%;"
+          placeholder="请选择此模型的标签"
+          @change="addTag"
+        >
+          <a-select-option v-for="(tag,index) in tags" :key="index">
+            {{ tag }}
+          </a-select-option>
+        </a-select>
+      </div>
       <div style="margin: 20px 0;"><span style="margin-right: 20px">是否设为模板库</span>
         <a-switch v-model="checked" @change="ChangeSwitch" />
       </div>
@@ -100,6 +124,7 @@
 
 <script>
 import { getAllMapCut, insertMapCut, updateMapCut, deleteMapCut } from '@/api/mapCut'
+import { getAllCity } from '@/api/city'
 
 export default {
   name: 'CardList',
@@ -111,13 +136,45 @@ export default {
       modeldescribe: '',
       isNew: false,
       checked: false,
-      cid: 0
+      cid: 0,
+      tags: [],
+      modeltag: [],
+      paramtag: []
     }
   },
   created () {
     this.getAllMapCut()
+    this.getAllCity()
   },
   methods: {
+    async getAllCity () {
+      const res = await getAllCity()
+      const allcity = res.data.detail
+      let tags = []
+      allcity.forEach((item) => {
+        let tag
+        if (item.cityattributes) {
+         tag = item.cityattributes.split(',')
+          tags.push.apply(tags, tag)
+        }
+      })
+      tags = [...new Set(tags)]
+      this.tags = tags
+    },
+    addTag (value) {
+      // console.log(`selected ${value}`)
+      // this.param
+      const paramTag = []
+      value.forEach((val) => {
+        this.tags.forEach((tag, index) => {
+          if (val === index) {
+            paramTag.push(tag)
+          }
+        })
+      })
+      this.paramTag = paramTag
+      // console.log(this.paramTag)
+    },
     async deleteModel (item) {
       const Cid = +item.cid
       const res = await deleteMapCut({ Cid })
@@ -125,16 +182,18 @@ export default {
           this.$message.success('删除成功')
           this.getAllMapCut()
         } else {
-          this.$message.error(res.data.description)
+          this.$message.error('请删除模型中的指标后重试')
         }
     },
     async confirm () {
       if (this.modelname !== '') {
+        const paramTag = this.paramTag.join(',')
       if (this.isNew) {
         const param = {
           cname: this.modelname,
           cdescribe: this.modeldescribe,
-          cmodel: this.checked ? '1' : '0'
+          cmodel: this.checked ? '1' : '0',
+          tag: paramTag
         }
         // console.log(param)
         const res = await insertMapCut(param)
@@ -151,9 +210,10 @@ export default {
           cid: this.cid,
           cname: this.modelname,
           cdescribe: this.modeldescribe,
-          cmodel: this.checked ? '1' : '0'
+          cmodel: this.checked ? '1' : '0',
+          tag: paramTag
         }
-        console.log(param)
+        // console.log(param)
         const res = await updateMapCut(param)
         if (res.data.code === 200) {
           this.$message.success('更新成功')
@@ -171,6 +231,8 @@ export default {
       this.cid = 0
       this.modelname = ''
       this.modeldescribe = ''
+      this.modeltag = []
+      this.paramTag = []
       this.isShow = false
     },
     ChangeModel (item) {
@@ -184,6 +246,17 @@ export default {
       this.modelname = item.cname
       this.modeldescribe = item.cdescribe
       this.isShow = true
+      const tagIndex = []
+      if (item.attributes[0]) {
+        this.tags.forEach((tag, index) => {
+        item.attributes.forEach((arr) => {
+          if (arr === tag) {
+            tagIndex.push(index)
+          }
+        })
+      })
+      }
+      this.modeltag = tagIndex
     },
     ChangeSwitch (checked) {
       this.checked = checked
@@ -204,25 +277,35 @@ export default {
         const data = res.data.detail
         data.forEach(item => {
           item.formatTime = this.formatTime(item.ctime)
+          let attributes
+          if (item.tag) {
+           attributes = item.tag.split(',')
+          // console.log(attributes)
+          } else {
+            attributes = []
+          }
+          item.attributes = attributes
         })
         this.allMapCut = data
         this.allMapCut.push({})
-        console.log(this.allMapCut)
+        // console.log(this.allMapCut)
       }
     },
     newModel () {
       this.modelname = ''
       this.modeldescribe = ''
+      this.modeltag = []
+      this.paramTag = []
       this.checked = false
       this.isShow = true
       this.isNew = true
       this.checked = false
     },
-    jumpToDetail (item) {
-      this.$router.push({ path: '/project/projectDetail', query: { cid: item.cid } })
+    jumpToDetail (cid) {
+      this.$router.push({ path: '/project/projectDetail', query: { cid } })
     },
-    jumpToUse () {
-      this.$router.push('/project/projectUse')
+    jumpToUse (cid) {
+      this.$router.push({ path: '/project/projectExist', query: { cid } })
     },
     testFun () {
       this.$message.info('快速开始被点击！')
@@ -256,7 +339,7 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    height: 80px;
+    height: 102px;
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
 
@@ -300,6 +383,6 @@ export default {
   background-color: #fff;
   border-radius: 2px;
   width: 100%;
-  height: 224.6px;
+  height: 244.6px;
 }
 </style>

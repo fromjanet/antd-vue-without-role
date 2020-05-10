@@ -9,8 +9,32 @@ export const asyncRouterMap = [
     name: 'index',
     component: BasicLayout,
     meta: { title: '首页' },
-    redirect: '/indicatorManage',
+    redirect: '/workplace',
     children: [
+      {
+        path: '/user',
+        component: UserLayout,
+        redirect: '/user/login',
+        hidden: true,
+        children: [
+          {
+            path: 'login',
+            name: 'login',
+            component: () => import(/* webpackChunkName: "user" */ '@/views/user/Login')
+          },
+          {
+            path: 'register',
+            name: 'register',
+            component: () => import(/* webpackChunkName: "user" */ '@/views/user/Register')
+          }
+        ]
+      },
+      // {
+      //   path: '/workplace',
+      //   name: 'Workplace',
+      //   component: () => import('@/views/dashboard/Workplace'),
+      //   meta: { title: '工作台', keepAlive: true, permission: [ 'dashboard' ] }
+      // },
       {
         path: '/indicatorManage',
         name: 'IndicatorManage',
@@ -23,6 +47,12 @@ export const asyncRouterMap = [
         component: () => import('@/views/indicatorManage/Analysis'),
         meta: { title: '城市管理', icon: 'table', permission: [ 'CityManage' ] }
       },
+      // {
+          //   path: '/project/projectMap',
+          //   name: 'ProjectMap',
+          //   component: () => import('@/views/indicatorManage/modules/echartsMap'),
+          //   meta: { title: '模型管理', icon: 'form' }
+          // },
       {
         path: '/project',
         name: 'Project',
@@ -45,11 +75,18 @@ export const asyncRouterMap = [
             meta: { title: '方案细节', keepAlive: true }
           },
           {
+            path: '/project/projectExist',
+            name: 'ProjectDetail',
+            component: () => import('@/views/projectManage/projectExist'),
+            hidden: true,
+            meta: { title: '已存在的方案' }
+          },
+          {
             path: '/project/projectUse',
             name: 'ProjectUse',
             component: () => import('@/views/projectManage/projectUse'),
             hidden: true,
-            meta: { title: '使用模型', keepAlive: true }
+            meta: { title: '使用模型' }
           }
         ]
       },

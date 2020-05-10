@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-04-26 18:24:43
- * @LastEditTime: 2020-04-26 20:51:54
+ * @LastEditTime: 2020-05-09 16:07:44
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \my-project\src\views\indicatorManage\modules\map.vue
@@ -65,7 +65,7 @@ scene.on('loaded', () => {
       scene.addLayer(chinaPolygonLayer)
       scene.addLayer(layer2)
     })
-
+// 缩放标
   fetch(
     'https://gw.alipayobjects.com/os/bmw-prod/ab42a860-f874-4452-a8b6-4168a36c1f2c.json' //  国界线
   ).then(res => res.json())
@@ -82,7 +82,7 @@ scene.on('loaded', () => {
 
       scene.addLayer(boundaries)
     })
-
+// 地名
   fetch(
     'https://gw.alipayobjects.com/os/bmw-prod/d09a3567-8c0e-4711-b8b8-cd82e8870e4b.json' //  标注数据
   ).then(res => res.json())

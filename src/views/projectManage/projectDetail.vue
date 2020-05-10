@@ -1,36 +1,44 @@
 <!--
  * @Author: your name
  * @Date: 2020-04-27 23:09:20
- * @LastEditTime: 2020-05-06 17:09:56
+ * @LastEditTime: 2020-05-10 17:54:59
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \my-project\src\views\projectManage\projectDetail.vue
  -->
 <template>
   <div class="projectDetail">
-    <div>
-      <p>载入模板库</p>
-      <a-select
-        placeholder="选择载入模板"
-        :value="selectedItems"
-        :defaultActiveFirstOption="false"
-        style="width: 100%"
-        @change="handleChange"
-      >
-        <a-select-option
-          v-for="item in modelIndicators"
-          :key="item.cid"
-          :value="item.cid"
-        >
-          {{ item.cname }}
-        </a-select-option>
-      </a-select>
+    <div class="rowbutton">
+      <div class="addModel">
+        <p>载入模板库</p>
+        <div>
+          <a-select
+            placeholder="选择载入模板库"
+            :value="selectedItems"
+            :defaultActiveFirstOption="false"
+            style="width: 100%"
+            @change="handleChange"
+          >
+            <a-select-option
+              v-for="item in modelIndicators"
+              :key="item.cid"
+              :value="item.cid"
+            >
+              {{ item.cname }}
+            </a-select-option>
+          </a-select>
+        </div>
+      </div>
+      <div>
+        <a-button
+          type="primary"
+          @click="confirm()"
+        >确认修改指标库</a-button>
+        <a-button
+          @click="cancel()"
+        >取消</a-button>
+      </div>
     </div>
-    <div
-      class="confirm"
-      style="cursor:pointer"
-      @click="confirm()"
-    >确定</div>
     <div class="row">
       <div class="contain">
         <div
@@ -52,7 +60,7 @@
                   type="down"
                   :rotate="item.rotate ? 0 : -90"
                   style="fontSize:0.8rem"
-                /></span><span>{{ item.id }}</span><span>{{ item.name }}</span></p>
+                /></span><span>{{ item.indexid }}</span><span>{{ item.indexname }}</span></p>
             </div>
             <div v-if="item.rotate">
               <div
@@ -66,11 +74,11 @@
               >
                 <div
                   :style="[{backgroundColor: itemChild.hasClick ? '#1890FF' : ''}]"
-                  @click="clickItem(itemChild.id)"
+                  @click="clickItem(itemChild.indexid)"
                   class="itemChild"
                 >
                   <div>
-                    <p><span>{{ itemChild.id }}</span><span>{{ itemChild.name }}</span></p>
+                    <p><span>{{ itemChild.indexid }}</span><span>{{ itemChild.indexname }}</span></p>
                   </div>
                 </div>
               </div>
@@ -94,34 +102,51 @@
               v-for="(item, index) in thirdIndicators"
               :key="index"
             >
-              <div>{{ item.id }}</div>
-              <div>{{ item.name }}</div>
+              <div>{{ item.indexid }}</div>
+              <div>{{ item.indexname }}</div>
             </div>
           </draggable>
         </div>
       </div>
-      <draggable
-        class="right"
-        :list="list2"
-        group="people"
-        @change="log"
-      >
-        <div
-          class="list-group-item"
-          v-for="(element, index) in list2"
-          :key="index"
-        >
-          <a-checkbox @change="onChange(element.id)">
-            {{ element.id }} {{ element.name }}
+      <div class="right">
+        <div class="selected" >
+          <a-checkbox :indeterminate="indeterminate" :checked="checkAll" @change="onCheckAllChange">
+            全选
           </a-checkbox>
+          共{{ list2.length }}项
+          <a-popconfirm
+            title="确认删除这些指标?"
+            ok-text="Yes"
+            cancel-text="No"
+            @confirm="deleteList"
+          >
+            <a-button size="small" type="primary">删除</a-button>
+          </a-popconfirm>
         </div>
-      </draggable>
+        <draggable
+          class="draggable"
+          :list="list2"
+          group="people"
+          @change="log"
+        >
+          <div
+            class="list-group-item"
+            v-for="(element, index) in list2"
+            :key="index"
+          >
+            <a-checkbox @change="onChange(element.indexid)" :checked="element.checked">
+              {{ element.indexid }} {{ element.indexname }}
+            </a-checkbox>
+          </div>
+        </draggable>
+      </div>
     </div>
   </div>
 </template>
 <script>
 import draggable from 'vuedraggable'
-import { getAllIndicators, getThirdIndicators } from '@/api/indicators'
+// import { getAllIndicators, getThirdIndicators } from '@/api/indicators'
+import { getAllIndexMap, getIndexChild } from '@/api/indexMap'
 import { getCutByCId, inserCut } from '@/api/cut'
 import { getModelMapCut } from '@/api/mapCut'
 
@@ -140,7 +165,12 @@ export default {
       thirdIndicators: [],
       originList: [],
       modelIndicators: [],
-      selectedItems: []
+      selectedItems: [],
+      plainOptions: [],
+      checkedList: [],
+      indeterminate: true,
+      checkAll: false,
+      checkNum: 0
     }
   },
   created () {
@@ -148,8 +178,39 @@ export default {
     this.getModelMapCut()
   },
   methods: {
-    onChange (id) {
-      console.log('checked = ', id)
+    deleteList () {
+      const data = JSON.parse(JSON.stringify(this.list2))
+      const res = []
+      data.forEach((item, index) => {
+        if (!item.checked) {
+          res.push(item)
+        }
+      })
+      this.list2 = res
+      // console.log(res)
+    },
+    onCheckAllChange (e) {
+      this.checkNum = this.checkNum + 1
+      if (this.checkNum % 2 === 0) {
+        this.list2.forEach((item) => {
+        item.checked = false
+      })
+      } else {
+        this.list2.forEach((item) => {
+        item.checked = true
+      })
+      }
+      // console.log(this.list2)
+      this.indeterminate = !this.indeterminate
+      this.checkAll = !this.checkAll
+    },
+    onChange (indexid) {
+      this.list2.forEach((item) => {
+        if (item.indexid === indexid) {
+          item.checked = !item.checked
+        }
+      })
+      // console.log(this.list2)
     },
      async handleChange (selectedItems) {
       this.selectedItems = selectedItems
@@ -159,17 +220,20 @@ export default {
       data.forEach((item) => {
         let has = true
         this.list2.forEach((old) => {
-          if (old.id === item.id) {
+          if (old.indexid === item.indexid) {
             has = false
           }
         })
         if (has) {
+          item.checked = false
           this.list2.push(item)
           hasupdate = false
         }
       })
       if (hasupdate) {
         this.$message.info('无指标更新')
+      } else {
+        this.getThirdIndicators('L1')
       }
     },
     async getModelMapCut () {
@@ -181,44 +245,74 @@ export default {
       })
       this.modelIndicators = res.data.detail
     },
+    cancel () {
+      this.$message.info('指标库未做更改')
+      this.$router.push('/project/projectManage')
+    },
     async confirm () {
+      this.$message.info('请稍等')
      const listIndexid = []
     this.list2.forEach((item) => {
-        listIndexid.push(item.id)
+        listIndexid.push(item.indexid)
     })
-      const res = await inserCut({ cid: this.$route.query.cid,
+    // console.log(listIndexid[0])
+    // console.log(this.originList[0])
+    let isEqual = true
+      for (let i = 0; i < this.originList.length; i++) {
+        let hasindex = false
+        for (let j = 0; j < listIndexid.length; j++) {
+          if (this.originList[j] === listIndexid[i]) {
+            hasindex = true
+          }
+        }
+        if (!hasindex) {
+          isEqual = false
+        }
+      }
+        if (this.originList.length === 0) {
+          isEqual = false
+        }
+      if (!isEqual) {
+        const res = await inserCut({ cid: this.$route.query.cid,
         listIndexid: listIndexid + '' })
         if (res.data.code === 200) {
           this.$message.success('修改成功')
         } else {
           this.$message.error(res.data.description)
         }
-      // this.$router.push('/project/projectManage')
+      } else {
+          this.$message.info('指标库保持原状')
+        }
+      this.$router.push('/project/projectManage')
     },
-    async clickItem (id) {
+    async clickItem (indexid) {
       this.indicators.forEach((item, index) => {
           item.children.forEach((child, i) => {
             child.hasClick = false
-            if (child.id === id) {
+            if (child.indexid === indexid) {
             child.hasClick = true
-            this.getThirdIndicators(child.id)
+            this.getThirdIndicators(child.indexid)
           }
           })
         })
     },
-    async getThirdIndicators (id) {
-      const res = await getThirdIndicators({ param: id })
+    async getThirdIndicators (indexid) {
+      const param = indexid + 'A_'
+      const res = await getIndexChild({ param })
       // console.log(res)
       if (res.data.code === 200) {
         const data = res.data.detail
         this.list2.forEach(item => {
           data.forEach((map, index) => {
-            if (item.id === map.id) {
+            if (item.indexid === map.indexid) {
               data.splice(index, 1)
             }
           })
         })
         this.thirdIndicators = data
+        this.thirdIndicators.forEach((item) => {
+          item.checked = false
+        })
       }
     },
     async getAllIndicators () {
@@ -228,11 +322,20 @@ export default {
         if (res2.data.code === 200) {
           // console.log(res2.data.detail)
           const list2 = res2.data.detail
+          list2.forEach((item) => {
+            item.checked = false
+          })
           this.list2 = list2
-          this.orginList = JSON.parse(JSON.stringify(this.list2))
+          const originList = []
+          this.list2.forEach((item) => {
+        originList.push(item.indexid)
+    })
+        this.originList = originList
+          // this.orginList = JSON.parse(JSON.stringify(this.list2))
+          // console.log(this.list2)
         }
       }
-      const res = await getAllIndicators()
+      const res = await getAllIndexMap()
       if (res.data.code === 200) {
         const data = res.data.detail
         data.forEach((item, index) => {
@@ -244,7 +347,7 @@ export default {
             child.hasClick = false
             if (i === 0 && index === 0) {
             child.hasClick = true
-            this.getThirdIndicators(child.id)
+            this.getThirdIndicators(child.indexid)
           }
           })
         })
@@ -273,10 +376,37 @@ export default {
 <style lang="less" scoped>
 .projectDetail {
   text-align: center;
+  .rowbutton {
+    background-color: #fff;
+    display: flex;
+    padding: 2rem 1.5rem 0;
+    align-items: center;
+    justify-content: space-between;
+    height: 5rem;
+    .addModel{
+      display: flex;
+      align-items: center;
+      p{
+        text-align: center;
+        margin: 0;
+        vertical-align: middle;
+        height: 100%;
+        margin-right: 0.5rem;
+      }
+      div{
+        width: 200px;
+      }
+    }
+  //   .confirm {
+  //   // width: 100%;
+  //   background-color: #1890ff;
+  //   height: 100%;
+  // }
+  }
   .row {
     background-color: #fff;
     display: flex;
-    padding: 2rem 1.5rem;
+    padding: 1rem 1.5rem;
     .contain {
       margin-right: 1rem;
       display: flex;
@@ -376,19 +506,22 @@ export default {
       width: 50%;
       // background-color: #dadada;
       border: 1px solid;
+      .draggable{
+        width: 100%;
+        height: 95%;
+      }
+      .selected{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.3rem 0.5rem;
+      }
       .list-group-item {
         display: flex;
         border: 1px solid;
-        div {
-          margin-right: 0.3rem;
-          color: #fff;
-        }
+        padding: 0.2rem 0.4rem;
       }
     }
-  }
-  .confirm {
-    // width: 100%;
-    background-color: #1890ff;
   }
 }
 </style>

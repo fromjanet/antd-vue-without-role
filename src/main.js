@@ -18,6 +18,12 @@ import './core/lazy_use'
 import './utils/filter' // global filter
 import './components/global.less'
 import { Dialog } from '@/components'
+import echarts from 'echarts'
+import axios from 'axios'
+
+Vue.prototype.$http = axios
+
+Vue.prototype.$echarts = echarts
 
 Vue.config.productionTip = false
 

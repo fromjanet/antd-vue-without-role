@@ -15,3 +15,7 @@ export const deleteMapCut = params => {
 export const getModelMapCut = params => {
   return API.GET('getModelMapCut', params)
 }
+
+export const getMapCutById = params => {
+  return API.GET('getMapCutById', params)
+}

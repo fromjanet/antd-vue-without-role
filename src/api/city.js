@@ -7,3 +7,7 @@ export const getAllCity = params => {
 export const updateCity = params => {
   return API.POST('updateCity', params)
 }
+
+export const getCityById = params => {
+  return API.GET('getCityById', params)
+}

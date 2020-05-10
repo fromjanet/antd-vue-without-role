@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-04-26 17:53:50
- * @LastEditTime: 2020-05-06 14:52:09
+ * @LastEditTime: 2020-05-09 21:55:55
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \my-project\src\views\indicatorManage\TreeList.vue
@@ -9,7 +9,7 @@
 <template>
   <div>
     <a-card :bordered="false">
-      <h1>指标库</h1>
+      <!-- <h1>指标库</h1> -->
       <a-row :gutter="8">
         <a-col :span="5">
           <div
@@ -161,7 +161,7 @@ import STree from '@/components/Tree/Tree'
 import { STable } from '@/components'
 import OrgModal from './modules/OrgModal'
 // import { getOrgTree, getServiceList } from '@/api/manage'
-import { getAllIndicators, getThirdIndicators } from '@/api/indicators'
+// import { getAllIndicators, getThirdIndicators } from '@/api/indicators'
 import { getAllIndexMap, insertIndexMap, updateIndexMap, deleteIndexMap } from '@/api/indexMap'
 // ,  getIndexChild, getAllIndexMap,updateIndexMap,deleteIndexMap
 export default {
@@ -201,7 +201,7 @@ export default {
           this.getAllIndexMap()
           this.thirdIndicators = []
         } else {
-          this.$message.error(res.data.description)
+          this.$message.error('指标已被模型使用，不能删除')
         }
     },
     changeIndexMap (item) {
@@ -227,7 +227,7 @@ export default {
         const res = await insertIndexMap(param)
       this.$message.info('添加成功')
       sessionStorage.setItem('beClick', res.data.detail.indexid.slice(0, 4))
-      console.log(res)
+      // console.log(res)
       } else if (this.modalType === 2) {
         const param1 = {
         indexid: this.indexid,
@@ -285,13 +285,13 @@ export default {
           })
     })
       },
-    async getThirdIndicators (id) {
-      const res = await getThirdIndicators({ param: id })
-      console.log(res)
-      if (res.data.code === 200) {
-        this.thirdIndicators = res.data.detail
-      }
-    },
+    // async getThirdIndicators (id) {
+    //   const res = await getThirdIndicators({ param: id })
+    //   console.log(res)
+    //   if (res.data.code === 200) {
+    //     this.thirdIndicators = res.data.detail
+    //   }
+    // },
     async getAllIndexMap () {
       const beclickindexid = sessionStorage.getItem('beClick')
       let hasthird
@@ -319,28 +319,28 @@ export default {
         this.indicators = data
         // console.log(data)
       }
-    },
-    async getAllIndicators () {
-      const res = await getAllIndicators()
-      if (res.data.code === 200) {
-        const data = res.data.detail
-        data.forEach((item, index) => {
-          item.rotate = false
-          if (index === 0) {
-            item.rotate = true
-          }
-          item.children.forEach((child, i) => {
-            child.hasClick = false
-            if (i === 0 && index === 0) {
-            child.hasClick = true
-            this.getThirdIndicators(child.id)
-          }
-          })
-        })
-        this.indicators = data
-        console.log(this.indicators)
-      }
     }
+    // async getAllIndicators () {
+    //   const res = await getAllIndicators()
+    //   if (res.data.code === 200) {
+    //     const data = res.data.detail
+    //     data.forEach((item, index) => {
+    //       item.rotate = false
+    //       if (index === 0) {
+    //         item.rotate = true
+    //       }
+    //       item.children.forEach((child, i) => {
+    //         child.hasClick = false
+    //         if (i === 0 && index === 0) {
+    //         child.hasClick = true
+    //         this.getThirdIndicators(child.id)
+    //       }
+    //       })
+    //     })
+    //     this.indicators = data
+    //     console.log(this.indicators)
+    //   }
+    // }
   }
 }
 </script>

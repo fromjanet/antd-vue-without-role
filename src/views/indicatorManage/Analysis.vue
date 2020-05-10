@@ -41,11 +41,11 @@
                       <div>
                         <template v-for="(tag) in item.cityattributes">
                           <a-tooltip v-if="tag.length > 20" :key="tag" :title="tag">
-                            <a-tag :key="tag" closable @close="() => handleClose(tag, item)">
+                            <a-tag color="blue" :key="tag" closable @close="() => handleClose(tag, item)">
                               {{ `${tag.slice(0, 20)}...` }}
                             </a-tag>
                           </a-tooltip>
-                          <a-tag v-else :key="tag" closable @close="() => handleClose(tag, item)">
+                          <a-tag color="blue" v-else :key="tag" closable @close="() => handleClose(tag, item)">
                             {{ tag }}
                           </a-tag>
                         </template>
@@ -76,17 +76,53 @@
           >
             <a-row>
               <a-col
-                :xl="16"
+                :xl="10"
                 :lg="12"
                 :md="12"
                 :sm="24"
                 :xs="24"
+                class="mapClass"
               >
-                <ChinaMap />
+                <!-- <ChinaMap /> -->
+                <div>
+                  <EchartsMap/>
+                </div>
               </a-col>
-              <!-- <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
-                <rank-list title="门店销售排行榜" :list="rankList"/>
-              </a-col> -->
+              <a-col :xl="14" :lg="12" :md="12" :sm="24" :xs="24">
+                <div class="citylist">
+                  <ul>
+                    <li class="title"><span class="first">城市名</span><span>城市属性</span></li>
+                    <li
+                      :key="index"
+                      v-for="(item, index) in city"><span class="first">{{ item.cityname }}</span>
+                      <span>
+                        <template v-for="(tag) in item.cityattributes">
+                          <a-tooltip v-if="tag.length > 20" :key="tag" :title="tag">
+                            <a-tag color="blue" :key="tag" closable @close="() => handleClose(tag, item)">
+                              {{ `${tag.slice(0, 20)}...` }}
+                            </a-tag>
+                          </a-tooltip>
+                          <a-tag color="blue" v-else :key="tag" closable @close="() => handleClose(tag, item)">
+                            {{ tag }}
+                          </a-tag>
+                        </template>
+                        <a-input
+                          v-if="item.inputVisible"
+                          ref="input"
+                          type="text"
+                          size="small"
+                          :style="{ width: '78px' }"
+                          :value="inputValue"
+                          @change="handleInputChange"
+                          @blur="handleInputConfirm"
+                          @keyup.enter="handleInputConfirm(item)"
+                        />
+                        <a-tag v-else style="background: #fff; borderStyle: dashed;" @click="showInput(item)">
+                          <a-icon type="plus" />
+                        </a-tag></span></li>
+                  </ul>
+                </div>
+              </a-col>
             </a-row>
           </a-tab-pane>
         </a-tabs>
@@ -108,16 +144,19 @@
 
 <script>
 import ChinaMap from './modules/ChinaMap'
+import EchartsMap from './modules/echartsMap'
 import { mixinDevice } from '@/utils/mixin'
 import { getAllCity, updateCity } from '@/api/city'
 import { Cascader } from 'ant-design-vue'
+import { mapGetters } from 'vuex'
 // , updateCity
 export default {
   name: 'Analysis',
   mixins: [mixinDevice],
   components: {
     ChinaMap,
-    Cascader
+    Cascader,
+    EchartsMap
   },
   data () {
     return {
@@ -131,7 +170,18 @@ export default {
         label: 'cityname',
         children: 'children'
       },
-      inputValue: ''
+      inputValue: '',
+      tableCity: []
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'Selectedprovince'
+    ])
+  },
+  watch: {
+    'Selectedprovince': function (newVal, oldVal) {
+      this.updateCity(newVal)
     }
   },
   created () {
@@ -139,6 +189,25 @@ export default {
     this.getAllCity()
   },
   methods: {
+    async updateCity (newVal) {
+      // console.log(this.list)
+      let value = []
+      for (let i = 0; i < this.list.length; i++) {
+        // console.log(item.province, newVal)
+        if (this.list[i].province.indexOf(newVal) !== -1) {
+          value.push(this.list[i].citycode.slice(0, 2))
+        } else if (this.list[i].cityname.indexOf(newVal) !== -1) {
+          value.push(this.list[i].citycode.slice(0, 2))
+          value.push(this.list[i].citycode)
+        }
+        if (value[0]) {
+          break
+        }
+      }
+      value = [...new Set(value)]
+      // console.log(value)
+      this.onChange(value)
+    },
      async handleClose (removedTag, item) {
       // const tags = this.tags.filter(tag => tag !== removedTag)
       // console.log(removedTag)
@@ -257,6 +326,26 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.mapClass{
+  padding: 1rem 2rem;
+}
+.citylist{
+  ul{
+    list-style:none;
+    .title{
+        font-size: 16px;
+        font-weight: bolder;
+      }
+    li{
+      padding: 0.5rem 0.2rem;
+      .first{
+        display: inline-block;
+        width: 10rem;
+      }
+      border-bottom: 1px solid #E8E8E8;
+    }
+  }
+}
 table {
   padding: 0.5rem 6rem;
   margin-top: 1rem;
