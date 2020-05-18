@@ -63,7 +63,7 @@
               class="ant-card-actions"
               slot="actions"
             >
-              <a @click="jumpToDetail(item.cid)">编辑指标体系</a>
+              <a @click="jumpToDetail(item.cid)">剪裁指标体系</a>
               <a @click="jumpToUse(item.cid)">使用</a>
             </template>
           </a-card>

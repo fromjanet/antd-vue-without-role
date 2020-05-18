@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-04-27 23:09:20
- * @LastEditTime: 2020-05-10 17:54:59
+ * @LastEditTime: 2020-05-18 22:51:55
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \my-project\src\views\projectManage\projectDetail.vue
@@ -111,7 +111,7 @@
       <div class="right">
         <div class="selected" >
           <a-checkbox :indeterminate="indeterminate" :checked="checkAll" @change="onCheckAllChange">
-            全选
+            全选&nbsp;选中{{ checkNum }}项
           </a-checkbox>
           共{{ list2.length }}项
           <a-popconfirm
@@ -170,6 +170,7 @@ export default {
       checkedList: [],
       indeterminate: true,
       checkAll: false,
+      checkFlag: 0,
       checkNum: 0
     }
   },
@@ -190,15 +191,17 @@ export default {
       // console.log(res)
     },
     onCheckAllChange (e) {
-      this.checkNum = this.checkNum + 1
-      if (this.checkNum % 2 === 0) {
+      this.checkFlag = this.checkFlag + 1
+      if (this.checkFlag % 2 === 0) {
         this.list2.forEach((item) => {
         item.checked = false
       })
+      this.checkNum = 0
       } else {
         this.list2.forEach((item) => {
         item.checked = true
       })
+      this.checkNum = this.list2.length
       }
       // console.log(this.list2)
       this.indeterminate = !this.indeterminate
@@ -208,6 +211,11 @@ export default {
       this.list2.forEach((item) => {
         if (item.indexid === indexid) {
           item.checked = !item.checked
+          if (item.checked) {
+            this.checkNum += 1
+          } else {
+            this.checkNum -= 1
+          }
         }
       })
       // console.log(this.list2)
@@ -250,13 +258,12 @@ export default {
       this.$router.push('/project/projectManage')
     },
     async confirm () {
-      this.$message.info('请稍等')
      const listIndexid = []
     this.list2.forEach((item) => {
         listIndexid.push(item.indexid)
     })
-    // console.log(listIndexid[0])
-    // console.log(this.originList[0])
+    // console.log(listIndexid)
+    // console.log(this.originList)
     let isEqual = true
       for (let i = 0; i < this.originList.length; i++) {
         let hasindex = false
@@ -269,10 +276,11 @@ export default {
           isEqual = false
         }
       }
-        if (this.originList.length === 0) {
+        if (!this.originList[0] || listIndexid.length !== this.originList.length) {
           isEqual = false
         }
       if (!isEqual) {
+      this.$message.info('请稍等')
         const res = await inserCut({ cid: this.$route.query.cid,
         listIndexid: listIndexid + '' })
         if (res.data.code === 200) {

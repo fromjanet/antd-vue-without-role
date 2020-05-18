@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-05-08 17:47:50
- * @LastEditTime: 2020-05-09 15:53:06
+ * @LastEditTime: 2020-05-18 23:24:09
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \my-project\src\views\projectManage\projectExist.vue
@@ -64,10 +64,10 @@ export default {
       if (this.colid) {
         const cid = +this.$route.query.cid
       const id = this.colid
-      const res = deleteCollect({ cid, id })
+      const res = await deleteCollect({ cid, id })
       console.log(res)
         this.$message.success('删除成功')
-        this.city = []
+        this.getAllCity()
       } else {
         this.$message.error('请先选择一张表格')
       }

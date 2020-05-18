@@ -1,5 +1,14 @@
 // import api from './index'
 // import { axios } from '@/utils/request'
+import * as API from './'
+
+export const loginAsync = params => {
+  return API.POST('login', params)
+}
+
+export const registerAsync = params => {
+  return API.POST('register', params)
+}
 
 // /**
 //  * login func

@@ -9,18 +9,18 @@
           </a>
         </div>
         <div class="desc">
-          人性化的指标裁剪，发展程度清晰可见
+          根据城市特点，使用个性化指标体系
         </div>
       </div>
 
       <route-view></route-view>
 
       <div class="footer">
-        <div class="links">
-          <a href="_self">帮助</a>
-          <a href="_self">隐私</a>
-          <a href="_self">条款</a>
-        </div>
+        <!-- <div class="links">
+          // <a href="_self">帮助</a>
+          // <a href="_self">隐私</a>
+          // <a href="_self">条款</a>
+        </div> -->
         <div class="copyright">
           Copyright &copy; 2020 Janet
         </div>

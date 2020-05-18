@@ -79,22 +79,22 @@
         <router-link class="register" :to="{ name: 'register' }">注册账户</router-link>
       </div>
     </a-form>
-
+    <!--
     <two-step-captcha
       v-if="requiredTwoStepCaptcha"
       :visible="stepCaptchaVisible"
       @success="stepCaptchaSuccess"
       @cancel="stepCaptchaCancel"
-    ></two-step-captcha>
+    ></two-step-captcha> -->
   </div>
 </template>
 
 <script>
-import md5 from 'md5'
+// import md5 from 'md5'
 import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
-import { mapActions } from 'vuex'
+// import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
-import { getSmsCaptcha, get2step } from '@/api/login'
+import { loginAsync } from '@/api/login'
 
 export default {
   components: {
@@ -120,17 +120,16 @@ export default {
     }
   },
   created () {
-    get2step({ })
-      .then(res => {
-        this.requiredTwoStepCaptcha = res.result.stepCode
-      })
-      .catch(() => {
-        this.requiredTwoStepCaptcha = false
-      })
+    // get2step({ })
+    //   .then(res => {
+    //     this.requiredTwoStepCaptcha = res.result.stepCode
+    //   })
+    //   .catch(() => {
+    //     this.requiredTwoStepCaptcha = false
+    //   })
     // this.requiredTwoStepCaptcha = true
   },
   methods: {
-    ...mapActions(['Login', 'Logout']),
     // handler
     handleUsernameOrEmail (rule, value, callback) {
       const { state } = this
@@ -146,13 +145,13 @@ export default {
       this.customActiveKey = key
       // this.form.resetFields()
     },
-    handleSubmit (e) {
+    async handleSubmit (e) {
       e.preventDefault()
       const {
         form: { validateFields },
         state,
-        customActiveKey,
-        Login
+        customActiveKey
+        // Login
       } = this
 
       state.loginBtn = true
@@ -163,10 +162,10 @@ export default {
         if (!err) {
           console.log('login form', values)
           const loginParams = { ...values }
-          delete loginParams.username
-          loginParams[!state.loginType ? 'email' : 'username'] = values.username
-          loginParams.password = md5(values.password)
-          Login(loginParams)
+          // delete loginParams.username
+          // loginParams[!state.loginType ? 'email' : 'username'] = values.username
+          // loginParams.password = md5(values.password)
+          loginAsync(loginParams)
             .then((res) => this.loginSuccess(res))
             .catch(err => this.requestFailed(err))
             .finally(() => {
@@ -195,21 +194,21 @@ export default {
             }
           }, 1000)
 
-          const hide = this.$message.loading('验证码发送中..', 0)
-          getSmsCaptcha({ mobile: values.mobile }).then(res => {
-            setTimeout(hide, 2500)
-            this.$notification['success']({
-              message: '提示',
-              description: '验证码获取成功，您的验证码为：' + res.result.captcha,
-              duration: 8
-            })
-          }).catch(err => {
-            setTimeout(hide, 1)
-            clearInterval(interval)
-            state.time = 60
-            state.smsSendBtn = false
-            this.requestFailed(err)
-          })
+          // const hide = this.$message.loading('验证码发送中..', 0)
+          // getSmsCaptcha({ mobile: values.mobile }).then(res => {
+          //   setTimeout(hide, 2500)
+          //   this.$notification['success']({
+          //     message: '提示',
+          //     description: '验证码获取成功，您的验证码为：' + res.result.captcha,
+          //     duration: 8
+          //   })
+          // }).catch(err => {
+          //   setTimeout(hide, 1)
+          //   clearInterval(interval)
+          //   state.time = 60
+          //   state.smsSendBtn = false
+          //   this.requestFailed(err)
+          // })
         }
       })
     },
@@ -235,7 +234,7 @@ export default {
         })
       })
       */
-      this.$router.push({ path: '/' })
+      this.$router.push({ path: '/indicatorManage' })
       // 延迟 1 秒显示欢迎信息
       setTimeout(() => {
         this.$notification.success({

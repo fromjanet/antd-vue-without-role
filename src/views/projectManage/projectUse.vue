@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-04-28 14:43:26
- * @LastEditTime: 2020-05-10 17:43:26
+ * @LastEditTime: 2020-05-11 21:21:29
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \my-project\src\views\projectManage\projectUse.vue
@@ -9,10 +9,10 @@
 <template>
   <div class="citycollect">
     <div class="selected">
-      <div><p>选择省份或城市</p>
+      <div><p>选择城市</p>
         <Cascader
           :options="cityOfProvince"
-          placeholder="请选择省份或城市"
+          placeholder="请选择城市"
           allowClear
           :fieldNames="fieldNames"
           @change="onChange"
@@ -81,6 +81,7 @@ methods: {
     const res = await insertCol({ cid, citycode: this.selectedCity, indexid, indexvalue })
     // console.log(res)
     if (res.data.code === 200) {
+      this.$message.success('创建成功')
       this.$router.push({ path: '/project/projectExist', query: { cid } })
     }
     } else {

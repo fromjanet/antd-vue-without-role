@@ -113,7 +113,7 @@
 
 <script>
 import { mixinDevice } from '@/utils/mixin.js'
-import { getSmsCaptcha } from '@/api/login'
+import { registerAsync } from '@/api/login'
 import { timeFix } from '@/utils/util'
 
 const levelNames = {
@@ -198,7 +198,7 @@ export default {
 
     handlePasswordCheck (rule, value, callback) {
       const password = this.form.getFieldValue('password')
-      console.log('value', value)
+      // console.log('value', value)
       if (value === undefined) {
         callback(new Error('请输入密码'))
       }
@@ -229,7 +229,17 @@ export default {
       validateFields({ force: true }, (err, values) => {
         if (!err) {
           state.passwordLevelChecked = false
-           $router.push({ path: '/' })
+          console.log(values)
+          const Params = {
+            username: values.username,
+            password: values.password,
+            email: values.email
+           }
+           registerAsync(Params)
+            .then((res) => {
+              console.log(res)
+
+           $router.push({ path: '/indicatorManage' })
       // 延迟 1 秒显示欢迎信息
           setTimeout(() => {
             this.$notification.success({
@@ -237,47 +247,51 @@ export default {
               description: `${timeFix()}，欢迎进入`
             })
           }, 1000)
+            }).catch(err => this.requestFailed(err))
+            .finally(() => {
+              // state.loginBtn = false
+            })
         }
       })
     },
 
-    getCaptcha (e) {
-      e.preventDefault()
-      const { form: { validateFields }, state, $message, $notification } = this
+    // getCaptcha (e) {
+    //   e.preventDefault()
+    //   const { form: { validateFields }, state, $message, $notification } = this
 
-      validateFields(['mobile'], { force: true },
-        (err, values) => {
-          if (!err) {
-            state.smsSendBtn = true
+    //   validateFields(['mobile'], { force: true },
+    //     (err, values) => {
+    //       if (!err) {
+    //         state.smsSendBtn = true
 
-            const interval = window.setInterval(() => {
-              if (state.time-- <= 0) {
-                state.time = 60
-                state.smsSendBtn = false
-                window.clearInterval(interval)
-              }
-            }, 1000)
+    //         const interval = window.setInterval(() => {
+    //           if (state.time-- <= 0) {
+    //             state.time = 60
+    //             state.smsSendBtn = false
+    //             window.clearInterval(interval)
+    //           }
+    //         }, 1000)
 
-            const hide = $message.loading('验证码发送中..', 0)
+    //         // const hide = $message.loading('验证码发送中..', 0)
 
-            getSmsCaptcha({ mobile: values.mobile }).then(res => {
-              setTimeout(hide, 2500)
-              $notification['success']({
-                message: '提示',
-                description: '验证码获取成功，您的验证码为：' + res.result.captcha,
-                duration: 8
-              })
-            }).catch(err => {
-              setTimeout(hide, 1)
-              clearInterval(interval)
-              state.time = 60
-              state.smsSendBtn = false
-              this.requestFailed(err)
-            })
-          }
-        }
-      )
-    },
+    //         // getSmsCaptcha({ mobile: values.mobile }).then(res => {
+    //         //   setTimeout(hide, 2500)
+    //         //   $notification['success']({
+    //         //     message: '提示',
+    //         //     description: '验证码获取成功，您的验证码为：' + res.result.captcha,
+    //         //     duration: 8
+    //         //   })
+    //         // }).catch(err => {
+    //         //   setTimeout(hide, 1)
+    //         //   clearInterval(interval)
+    //         //   state.time = 60
+    //         //   state.smsSendBtn = false
+    //         //   this.requestFailed(err)
+    //         // })
+    //       }
+    //     }
+    //   )
+    // },
     requestFailed (err) {
       this.$notification['error']({
         message: '错误',

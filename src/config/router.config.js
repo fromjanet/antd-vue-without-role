@@ -9,7 +9,7 @@ export const asyncRouterMap = [
     name: 'index',
     component: BasicLayout,
     meta: { title: '首页' },
-    redirect: '/workplace',
+    redirect: '/user',
     children: [
       {
         path: '/user',
@@ -32,7 +32,7 @@ export const asyncRouterMap = [
       // {
       //   path: '/workplace',
       //   name: 'Workplace',
-      //   component: () => import('@/views/dashboard/Workplace'),
+      //   component: () => import('@/views/workplace'),
       //   meta: { title: '工作台', keepAlive: true, permission: [ 'dashboard' ] }
       // },
       {
