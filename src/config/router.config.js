@@ -47,6 +47,12 @@ export const asyncRouterMap = [
         component: () => import('@/views/indicatorManage/Analysis'),
         meta: { title: '城市管理', icon: 'table', permission: [ 'CityManage' ] }
       },
+      {
+        path: '/recommender',
+        name: 'Recommender',
+        component: () => import('@/views/recommender/red'),
+        meta: { title: '自动裁剪', icon: 'table', permission: [ 'Recommender' ] }
+      },
       // {
           //   path: '/project/projectMap',
           //   name: 'ProjectMap',
