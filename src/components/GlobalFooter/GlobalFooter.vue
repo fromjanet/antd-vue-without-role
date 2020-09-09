@@ -1,6 +1,14 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-04-26 15:44:18
+ * @LastEditTime: 2020-04-26 21:22:32
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \my-project\src\components\GlobalFooter\GlobalFooter.vue
+ -->
 <template>
   <div class="footer">
-    <div class="links">
+    <!-- <div class="links">
       <a
         href="https://pro.loacg.com/"
         target="_blank"
@@ -13,10 +21,10 @@
       </a>
       <a href="https://ant.design/">Ant Design</a>
       <a href="https://vue.ant.design/">Vue Antd</a>
-    </div>
+    </div> -->
     <div class="copyright">
       Copyright
-      <a-icon type="copyright" /> 2018 <span>白鹭学园技术组出品</span>
+      <a-icon type="copyright" /> 2020 <span>Janet</span>
     </div>
   </div>
 </template>

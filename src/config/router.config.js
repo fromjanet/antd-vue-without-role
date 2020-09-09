@@ -9,14 +9,100 @@ export const asyncRouterMap = [
     name: 'index',
     component: BasicLayout,
     meta: { title: '首页' },
-    redirect: '/dashboard/workplace',
+    redirect: '/user',
     children: [
+      {
+        path: '/user',
+        component: UserLayout,
+        redirect: '/user/login',
+        hidden: true,
+        children: [
+          {
+            path: 'login',
+            name: 'login',
+            component: () => import(/* webpackChunkName: "user" */ '@/views/user/Login')
+          },
+          {
+            path: 'register',
+            name: 'register',
+            component: () => import(/* webpackChunkName: "user" */ '@/views/user/Register')
+          }
+        ]
+      },
+      // {
+      //   path: '/workplace',
+      //   name: 'Workplace',
+      //   component: () => import('@/views/workplace'),
+      //   meta: { title: '工作台', keepAlive: true, permission: [ 'dashboard' ] }
+      // },
+      {
+        path: '/indicatorManage',
+        name: 'IndicatorManage',
+        component: () => import('@/views/indicatorManage/TreeList'),
+        meta: { title: '指标管理', icon: 'slack', permission: [ 'IndicatorManage' ] }
+      },
+      {
+        path: '/cityManage',
+        name: 'CityManage',
+        component: () => import('@/views/indicatorManage/Analysis'),
+        meta: { title: '城市管理', icon: 'table', permission: [ 'CityManage' ] }
+      },
+      {
+        path: '/recommender',
+        name: 'Recommender',
+        component: () => import('@/views/recommender/red'),
+        meta: { title: '自动裁剪', icon: 'table', permission: [ 'Recommender' ] }
+      },
+      // {
+          //   path: '/project/projectMap',
+          //   name: 'ProjectMap',
+          //   component: () => import('@/views/indicatorManage/modules/echartsMap'),
+          //   meta: { title: '模型管理', icon: 'form' }
+          // },
+      {
+        path: '/project',
+        name: 'Project',
+        redirect: '/project/projectManage',
+        component: RouteView,
+        hideChildrenInMenu: true,
+        meta: { title: '模型管理', keepAlive: true, icon: bxAnaalyse },
+        children: [
+          {
+            path: '/project/projectManage',
+            name: 'ProjectManage',
+            component: () => import('@/views/projectManage/CardList'),
+            meta: { title: '模型管理', icon: 'form' }
+          },
+          {
+            path: '/project/projectDetail',
+            name: 'ProjectDetail',
+            component: () => import('@/views/projectManage/projectDetail'),
+            hidden: true,
+            meta: { title: '方案细节', keepAlive: true }
+          },
+          {
+            path: '/project/projectExist',
+            name: 'ProjectDetail',
+            component: () => import('@/views/projectManage/projectExist'),
+            hidden: true,
+            meta: { title: '已存在的方案' }
+          },
+          {
+            path: '/project/projectUse',
+            name: 'ProjectUse',
+            component: () => import('@/views/projectManage/projectUse'),
+            hidden: true,
+            meta: { title: '使用模型' }
+          }
+        ]
+      },
       // dashboard
       {
         path: 'dashboard',
         name: 'dashboard',
         redirect: '/dashboard/workplace',
         component: RouteView,
+        hidden: true,
         meta: { title: '仪表盘', keepAlive: true, icon: bxAnaalyse, permission: [ 'dashboard' ] },
         children: [
           {
@@ -51,6 +137,7 @@ export const asyncRouterMap = [
         path: '/form',
         redirect: '/form/base-form',
         component: PageView,
+        hidden: true,
         meta: { title: '表单页', icon: 'form', permission: [ 'form' ] },
         children: [
           {
@@ -79,6 +166,7 @@ export const asyncRouterMap = [
         path: '/list',
         name: 'list',
         component: PageView,
+        hidden: true,
         redirect: '/list/table-list',
         meta: { title: '列表页', icon: 'table', permission: [ 'table' ] },
         children: [
@@ -136,6 +224,7 @@ export const asyncRouterMap = [
         path: '/profile',
         name: 'profile',
         component: RouteView,
+        hidden: true,
         redirect: '/profile/basic',
         meta: { title: '详情页', icon: 'profile', permission: [ 'profile' ] },
         children: [
@@ -159,6 +248,7 @@ export const asyncRouterMap = [
         path: '/result',
         name: 'result',
         component: PageView,
+        hidden: true,
         redirect: '/result/success',
         meta: { title: '结果页', icon: 'check-circle-o', permission: [ 'result' ] },
         children: [
@@ -182,6 +272,7 @@ export const asyncRouterMap = [
         path: '/exception',
         name: 'exception',
         component: RouteView,
+        hidden: true,
         redirect: '/exception/403',
         meta: { title: '异常页', icon: 'warning', permission: [ 'exception' ] },
         children: [
@@ -210,6 +301,7 @@ export const asyncRouterMap = [
       {
         path: '/account',
         component: RouteView,
+        hidden: true,
         redirect: '/account/center',
         name: 'account',
         meta: { title: '个人页', icon: 'user', keepAlive: true, permission: [ 'user' ] },
@@ -268,6 +360,7 @@ export const asyncRouterMap = [
         path: '/other',
         name: 'otherPage',
         component: PageView,
+        hidden: true,
         meta: { title: '其他组件', icon: 'slack', permission: [ 'dashboard' ] },
         redirect: '/other/icon-selector',
         children: [

@@ -1,3 +1,11 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-04-26 15:44:18
+ * @LastEditTime: 2020-05-11 12:51:14
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \my-project\src\components\NoticeIcon\NoticeIcon.vue
+ -->
 <template>
   <a-popover
     v-model="visible"
@@ -40,11 +48,11 @@
         </a-tabs>
       </a-spin>
     </template>
-    <span @click="fetchNotice" class="header-notice" ref="noticeRef" style="padding: 0 18px">
+    <!-- <span @click="fetchNotice" class="header-notice" ref="noticeRef" style="padding: 0 18px">
       <a-badge count="12">
         <a-icon style="font-size: 16px; padding: 4px" type="bell" />
       </a-badge>
-    </span>
+    </span> -->
   </a-popover>
 </template>
 

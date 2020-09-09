@@ -57,7 +57,7 @@ export default {
           callback: () => {
             // this.$message.info('快速开始被单击')
             this.testFun()
-            console.log('call[\'快速开始\'] action')
+            // console.log('call[\'快速开始\'] action')
           }
         },
         { icon: 'info-circle-o', href: '#', title: '产品简介' },
@@ -104,7 +104,7 @@ export default {
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
 
-      margin-bottom: 1em;
+      // margin-bottom: 1em;
     }
   }
 

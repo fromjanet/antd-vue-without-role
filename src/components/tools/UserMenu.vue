@@ -1,11 +1,19 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-04-26 15:44:18
+ * @LastEditTime: 2020-05-11 12:49:51
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \my-project\src\components\tools\UserMenu.vue
+ -->
 <template>
   <div class="user-wrapper">
     <div class="content-box">
-      <a href="https://pro.loacg.com/docs/getting-started" target="_blank">
+      <!-- <a href="https://pro.loacg.com/docs/getting-started" target="_blank">
         <span class="action">
           <a-icon type="question-circle-o"></a-icon>
         </span>
-      </a>
+      </a> -->
       <notice-icon class="action"/>
       <a-dropdown>
         <span class="action ant-dropdown-link user-dropdown-menu">
@@ -13,7 +21,7 @@
           <span>{{ nickname }}</span>
         </span>
         <a-menu slot="overlay" class="user-dropdown-menu-wrapper">
-          <a-menu-item key="0">
+          <!-- <a-menu-item key="0">
             <router-link :to="{ name: 'center' }">
               <a-icon type="user"/>
               <span>个人中心</span>
@@ -29,7 +37,7 @@
             <a-icon type="setting"/>
             <span>测试</span>
           </a-menu-item>
-          <a-menu-divider/>
+          <a-menu-divider/> -->
           <a-menu-item key="3">
             <a href="javascript:;" @click="handleLogout">
               <a-icon type="logout"/>
