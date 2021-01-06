@@ -16,7 +16,7 @@
     "@antv/l7": "^2.2.1",
     "@antv/l7-maps": "^2.2.1",
     "ant-design-vue": "^1.5.0-rc.6",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "core-js": "^3.1.2",
     "enquire.js": "^2.1.6",
     "load-styles": "^2.0.0",
